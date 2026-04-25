@@ -1,6 +1,8 @@
 """
+Created on Wed Apr 22 18:29:51 2026
+
 @author: Rosa Helena Dias Coelho
-objective: class Server
+
 """
 
 from classes.provider import Provider
