@@ -2,7 +2,7 @@
 Created on Tue Apr 21 15:38:23 2026
 
 @author: Asus
-objective: class Datacenter
+
 """
 from classes.gclass import Gclass
 
