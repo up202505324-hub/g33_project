@@ -1,7 +1,10 @@
 """
+Created on Wed Apr 24 16:20:32 2026
+
 @author: Eduarda Venília Pinto Teixiera
-objective: class Provider
+
 """
+
 import datetime
 from classes.gclass import Gclass
 
