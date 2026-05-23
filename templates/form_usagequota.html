@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Editar' if obj else 'Nova' }} Quota de Utilização · GestorCloud{% endblock %}
+{% block breadcrumb %}Quota de Utilização / {{ 'Editar' if obj else 'Nova' }}{% endblock %}
+{% block page_title %}{{ 'Editar' if obj else 'Nova' }} Quota de Utilização{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+  <div class="card-header">
+    <h3>{{ '✏️ Editar' if obj else '＋ Criar' }} Quota de Utilização</h3>
+  </div>
+  <div style="padding: 28px;">
+    <form method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="provider_id">Fornecedor</label>
+          <select id="provider_id" name="provider_id" required>
+            {% for p in providers %}
+              <option value="{{ p.id }}" {{ 'selected' if obj and obj._provider_id == p.id }}>
+                #{{ p.id }} — {{ p.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="datacenter_id">Datacenter</label>
+          <select id="datacenter_id" name="datacenter_id" required>
+            {% for d in datacenters %}
+              <option value="{{ d.id }}" {{ 'selected' if obj and obj._datacenter_id == d.id }}>
+                #{{ d.id }} — {{ d.title }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="usage_date">Data de Utilização</label>
+          <input type="date" id="usage_date" name="usage_date"
+                 value="{{ obj._usage_date if obj else '' }}" required>
+        </div>
+        <div class="form-group">
+          <label for="cost">Custo (€)</label>
+          <input type="number" step="0.01" id="cost" name="cost"
+                 value="{{ obj._cost if obj else '' }}" required>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ '💾 Guardar Alterações' if obj else '＋ Criar' }}
+        </button>
+        <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
