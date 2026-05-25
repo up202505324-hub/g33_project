@@ -25,7 +25,7 @@ print('3 - ServerSpec')
 print('4 - Server')
 print('5 - UsageQuota')
 choice = input('? ')
-
+ 
 if choice == '1':
     test_class = Provider
     ob = '0;NewProvider;2024-01-01'
@@ -85,7 +85,6 @@ while op != 'q':
             p1 = p
         str_list = list(p.__dict__.keys())
         attrib = str_list[0]
-        atype = type(getattr(p, attrib))
         print('leave blank to auto-increment')
         id = input(f'{attrib[1:]} = ')
         if id == '':
@@ -93,6 +92,8 @@ while op != 'q':
         else:
             id = int(id)
         strarg = f'test_class({id}'
+        fk = getattr(test_class, 'fk', {})
+        valid = True
         for i in range(1, len(str_list)):
             attrib = str_list[i]
             atype = type(getattr(p, attrib))
@@ -102,15 +103,25 @@ while op != 'q':
             else:
                 value = atype(input(f'{attrib[1:]} = '))
                 strarg += f',{value}'
-        strarg += ')'
-        if p1 is not None:
-            test_class.remove(getattr(p, str_list[0]))
-        print(strarg)
-        pobj = eval(strarg)
-        attrib = str_list[0]
-        code = getattr(pobj, attrib)
-        obj = test_class.current(code)
-        test_class.insert(code)
+            # validate foreign key immediately after this input
+            if attrib in fk:
+                ref_class = fk[attrib]
+                if int(value) not in ref_class.lst:
+                    print(f'Error: {ref_class.__name__} {int(value)} not found')
+                    valid = False
+                    break
+        if valid:
+            strarg += ')'
+            if p1 is not None:
+                test_class.remove(getattr(p, str_list[0]))
+            try:
+                pobj = eval(strarg, {'test_class': test_class})
+                attrib = str_list[0]
+                code = getattr(pobj, attrib)
+                obj = test_class.current(code)
+                test_class.insert(code)
+            except ValueError as e:
+                print(f'Error: {e}')
  
     elif op == 'm':
         str_list = list(p.__dict__.keys())
@@ -120,15 +131,27 @@ while op != 'q':
             id = int(id)
             obj = test_class.current(id)
             print('Leave blank or new value to modify')
+            fk = getattr(test_class, 'fk', {})
+            valid = True
             for attrib in str_list[1:]:
                 value = input(f'{attrib[1:]} = ')
                 if value != '':
                     atype = type(getattr(p, attrib))
-                    if atype == datetime.date:
-                        setattr(obj, attrib, datetime.date.fromisoformat(value))
-                    else:
-                        setattr(obj, attrib, atype(value))
-        test_class.update(id)
+                    if attrib in fk:
+                        ref_class = fk[attrib]
+                        if int(value) not in ref_class.lst:
+                            print(f'Error: {ref_class.__name__} {int(value)} not found')
+                            valid = False
+                            break
+                    try:
+                        if atype == datetime.date:
+                            setattr(obj, attrib, datetime.date.fromisoformat(value))
+                        else:
+                            setattr(obj, attrib, atype(value))
+                    except ValueError as e:
+                        print(f'Error: {e}')
+            if valid:
+                test_class.update(id)
  
     elif op == 'r':
         str_list = list(p.__dict__.keys())
