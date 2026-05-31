@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Gráficos · GestorCloud{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Análise de Dados</h2>
+
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-header">
+    <h3>💰 Providers com Custo Acima da Média</h3>
+  </div>
+  <div style="padding:8px;">{{ chart_above_avg | safe }}</div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+  <div class="card">
+    <div class="card-header">
+      <h3>🗄️ Top 10 Datacenters Mais Utilizados</h3>
+    </div>
+    <div style="padding:8px;">{{ chart_top_dc | safe }}</div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h3>🖥️ Servidores por Provider</h3>
+    </div>
+    <div style="padding:8px;">{{ chart_servers | safe }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>📅 Comparação de Custos por Ano</h3>
+  </div>
+  <div style="padding:8px;">{{ chart_yearly | safe }}</div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Utilizadores · GestorCloud{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Gestão de Utilizadores</h2>
+
+<div class="card form-card">
+  <div class="card-header">
+    <h3>Utilizador</h3>
+    <div>
+      {% if mode == 'show' %}
+        <button onclick="location.href='/userlogin?option=edit'" class="btn btn-secondary btn-sm">Editar</button>
+        {% if group == 'admin' %}
+          <button onclick="location.href='/userlogin?option=insert'" class="btn btn-primary btn-sm">+ Novo</button>
+          <button onclick="return confirm('Eliminar?') && (location.href='/userlogin?option=delete')" class="btn btn-danger btn-sm">Eliminar</button>
+        {% endif %}
+        <button onclick="location.href='/userlogin?option=exit'" class="btn btn-secondary btn-sm">Sair</button>
+      {% else %}
+        <button form="form" type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        <button onclick="location.href='/userlogin?option=cancel'" class="btn btn-secondary btn-sm">Cancelar</button>
+      {% endif %}
+    </div>
+  </div>
+  <div style="padding: 20px;">
+    <form id="form" method="POST" action="/userlogin?option=save">
+      <div class="form-group">
+        <label>Id</label>
+        <input type="text" value="{{ id }}" disabled>
+      </div>
+      <div class="form-group">
+        <label>Utilizador</label>
+        <input type="text" name="user" value="{{ user }}"
+               {{ '' if mode != 'show' and group == 'admin' else 'disabled' }}>
+      </div>
+      {% if group == 'admin' %}
+      <div class="form-group">
+        <label>Grupo</label>
+        <input type="text" name="usergroup" value="{{ usergroup }}"
+               {{ '' if mode != 'show' else 'disabled' }}>
+      </div>
+      {% endif %}
+      <div class="form-group">
+        <label>Nova Password <small style="color:#999;">(deixar em branco para não alterar)</small></label>
+        <input type="password" name="password" {{ '' if mode != 'show' else 'disabled' }}>
+      </div>
+    </form>
+    {% if msg %}
+      <p style="color: red; font-size: 13px;">{{ msg }}</p>
+    {% endif %}
+  </div>
+  {% if group == 'admin' and mode == 'show' %}
+  <div style="padding: 0 20px 16px;">
+    <button onclick="location.href='/userlogin?option=first'" class="btn btn-secondary btn-sm">Primeiro</button>
+    <button onclick="location.href='/userlogin?option=previous'" class="btn btn-secondary btn-sm">Anterior</button>
+    <button onclick="location.href='/userlogin?option=next'" class="btn btn-secondary btn-sm">Seguinte</button>
+    <button onclick="location.href='/userlogin?option=last'" class="btn btn-secondary btn-sm">Último</button>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}GestorCloud{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+  <div>
+    <a href="{{ url_for('index') }}" class="brand">☁️ GestorCloud</a>
+    <a href="{{ url_for('providers') }}">Providers</a>
+    <a href="{{ url_for('datacenters') }}">Datacenters</a>
+    <a href="{{ url_for('serverspecs') }}">ServerSpecs</a>
+    <a href="{{ url_for('servers') }}">Servers</a>
+    <a href="{{ url_for('usagequotas') }}">UsageQuotas</a>
+    <a href="{{ url_for('charts') }}">Gráficos</a>
+  </div>
+  <div>
+    {% if session.get('user') %}
+      <a href="#" onclick="document.getElementById('modal-pw').style.display='flex'" style="color:#bdc3c7;">Alterar Password</a>
+      <a href="{{ url_for('logoff') }}" style="color:#e74c3c; margin-left:8px;">Sair</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flashes">
+        {% for cat, msg in messages %}
+          <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<div id="modal-pw" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+  <div style="background:white; border-radius:8px; padding:28px; width:360px; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+    <h3 style="margin-bottom:18px; color:#2c3e50;">Alterar Password</h3>
+    <form method="POST" action="/change_password">
+      <div class="form-group">
+        <label>Password Atual</label>
+        <input type="password" name="current_password" maxlength="128" required>
+      </div>
+      <div class="form-group">
+        <label>Nova Password</label>
+        <input type="password" name="new_password" maxlength="128" required>
+      </div>
+      <div class="form-group">
+        <label>Confirmar Nova Password</label>
+        <input type="password" name="confirm_password" maxlength="128" required>
+      </div>
+      {% if pw_error %}
+        <p style="color:red; font-size:13px; margin-bottom:12px;">{{ pw_error }}</p>
+      {% endif %}
+      <div style="display:flex; gap:10px;">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="button" onclick="document.getElementById('modal-pw').style.display='none'" class="btn btn-secondary">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>

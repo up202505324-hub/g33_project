@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ cls }} #{{ obj.id }} · GestorCloud{% endblock %}
+
+{% block content %}
+<p class="page-title">{{ cls }}: {{ obj_title }}</p>
+
+<div style="display:flex; gap:12px; margin-bottom:20px;">
+  <a href="{{ back_url }}" class="btn btn-secondary btn-sm">← Voltar</a>
+  <a href="{{ edit_url }}" class="btn btn-primary btn-sm">Editar</a>
+  <form method="POST" action="{{ delete_url }}" style="display:inline" onsubmit="return confirm('Eliminar?')">
+    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+  </form>
+</div>
+
+<div class="detail-grid">
+  <div class="card" style="padding:20px;">
+    {% for label, value in fields %}
+    <div class="detail-field">
+      <div class="field-label">{{ label }}</div>
+      <div class="field-value">{{ value }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="card" style="padding:20px;">
+    {% for label, value in stats %}
+    <div class="detail-field">
+      <div class="field-label">{{ label }}</div>
+      <div class="field-value">{{ value }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% for table in related_tables %}
+<div class="card">
+  <div class="card-header"><h3>{{ table.title }}</h3></div>
+  {% if table.rows %}
+  <table class="related-table">
+    <thead><tr>{% for h in table.headers %}<th>{{ h }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {% for row in table.rows %}
+      <tr>
+        {% for cell in row.cells %}
+        <td>
+          {% if cell.url %}
+            <a href="{{ cell.url }}" class="badge {{ cell.badge }}">{{ cell.text }}</a>
+          {% elif cell.btn_url %}
+            <a href="{{ cell.btn_url }}" class="btn btn-{{ cell.btn_type }} btn-sm">{{ cell.text }}</a>
+          {% else %}
+            {{ cell.text }}
+          {% endif %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">Nenhum registo associado.</div>
+  {% endif %}
+</div>
+{% endfor %}
+
+{% endblock %}

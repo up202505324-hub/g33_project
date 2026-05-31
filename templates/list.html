@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}{{ cls }} · GestorCloud{% endblock %}
+
+{% block content %}
+<p class="page-title">{{ cls }}
+  <span style="font-size:13px; color:#7f8c8d; font-weight:normal; margin-left:8px;">{{ total }} registos</span>
+</p>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      {% if cls == 'Provider' %}
+        <a href="{{ url_for('provider_new') }}" class="btn btn-primary btn-sm">+ Novo</a>
+      {% elif cls == 'Datacenter' %}
+        <a href="{{ url_for('datacenter_new') }}" class="btn btn-primary btn-sm">+ Novo</a>
+      {% elif cls == 'ServerSpec' %}
+        <a href="{{ url_for('serverspec_new') }}" class="btn btn-primary btn-sm">+ Novo</a>
+      {% elif cls == 'Server' %}
+        <a href="{{ url_for('server_new') }}" class="btn btn-primary btn-sm">+ Novo</a>
+      {% elif cls == 'UsageQuota' %}
+        <a href="{{ url_for('usagequota_new') }}" class="btn btn-primary btn-sm">+ Novo</a>
+      {% endif %}
+    </div>
+    <span style="font-size:12px; color:#7f8c8d;">Página {{ page }} de {{ total_pages }}</span>
+  </div>
+
+  <form method="GET" class="search-bar">
+    <input type="text" name="search" value="{{ search }}" placeholder="Pesquisar...">
+    <select name="sort">
+      <option value="">Ordenar por...</option>
+      {% for a, d in zip(att[1:], des[1:]) %}
+        <option value="{{ a[1:] }}" {{ 'selected' if sort == a[1:] }}>{{ d }}</option>
+      {% endfor %}
+    </select>
+    <select name="order">
+      <option value="asc" {{ 'selected' if order == 'asc' }}>Crescente</option>
+      <option value="desc" {{ 'selected' if order == 'desc' }}>Decrescente</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Aplicar</button>
+    <a href="?" class="btn btn-secondary btn-sm">Limpar</a>
+  </form>
+
+  {% if items %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          {% for d in des %}<th>{{ d }}</th>{% endfor %}
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          {% for a in att %}
+            {% set val = item.__dict__[a] %}
+            <td>
+              {% if a == '_provider_id' and providers_map is defined %}
+                <a href="{{ url_for('provider_detail', id=val) }}" class="badge badge-blue">#{{ val }} {{ providers_map.get(val, '?') }}</a>
+              {% elif a == '_datacenter_id' and datacenters_map is defined %}
+                <a href="{{ url_for('datacenter_detail', id=val) }}" class="badge badge-purple">#{{ val }} {{ datacenters_map.get(val, '?') }}</a>
+              {% elif a == '_spec_id' and specs_map is defined %}
+                <a href="{{ url_for('serverspec_detail', id=val) }}" class="badge badge-green">#{{ val }} {{ specs_map.get(val, '?') }}</a>
+              {% elif a == '_cost' %}
+                €{{ "%.2f"|format(val) }}
+              {% else %}
+                {{ val }}
+              {% endif %}
+            </td>
+          {% endfor %}
+          <td>
+            {% set item_id = item._id %}
+            {% if cls == 'Provider' %}
+              <a href="{{ url_for('provider_detail', id=item_id) }}" class="btn btn-success btn-sm">Ver</a>
+              <a href="{{ url_for('provider_edit', id=item_id) }}" class="btn btn-secondary btn-sm">Editar</a>
+              <form method="POST" action="{{ url_for('provider_delete', id=item_id) }}" style="display:inline" onsubmit="return confirm('Eliminar?')">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+              </form>
+            {% elif cls == 'Datacenter' %}
+              <a href="{{ url_for('datacenter_detail', id=item_id) }}" class="btn btn-success btn-sm">Ver</a>
+              <a href="{{ url_for('datacenter_edit', id=item_id) }}" class="btn btn-secondary btn-sm">Editar</a>
+              <form method="POST" action="{{ url_for('datacenter_delete', id=item_id) }}" style="display:inline" onsubmit="return confirm('Eliminar?')">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+              </form>
+            {% elif cls == 'ServerSpec' %}
+              <a href="{{ url_for('serverspec_detail', id=item_id) }}" class="btn btn-success btn-sm">Ver</a>
+              <a href="{{ url_for('serverspec_edit', id=item_id) }}" class="btn btn-secondary btn-sm">Editar</a>
+              <form method="POST" action="{{ url_for('serverspec_delete', id=item_id) }}" style="display:inline" onsubmit="return confirm('Eliminar?')">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+              </form>
+            {% elif cls == 'Server' %}
+              <a href="{{ url_for('server_detail', id=item_id) }}" class="btn btn-success btn-sm">Ver</a>
+              <a href="{{ url_for('server_edit', id=item_id) }}" class="btn btn-secondary btn-sm">Editar</a>
+              <form method="POST" action="{{ url_for('server_delete', id=item_id) }}" style="display:inline" onsubmit="return confirm('Eliminar?')">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+              </form>
+            {% elif cls == 'UsageQuota' %}
+              <a href="{{ url_for('usagequota_edit', id=item_id) }}" class="btn btn-secondary btn-sm">Editar</a>
+              <form method="POST" action="{{ url_for('usagequota_delete', id=item_id) }}" style="display:inline" onsubmit="return confirm('Eliminar?')">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">Nenhum registo encontrado.</div>
+  {% endif %}
+
+  <div class="pagination">
+    <a href="?page=1{% if search %}&search={{ search }}{% endif %}" class="btn btn-secondary btn-sm">« Primeiro</a>
+    <a href="?page={{ [page-1, 1]|max }}{% if search %}&search={{ search }}{% endif %}" class="btn btn-secondary btn-sm">‹ Anterior</a>
+    <span style="margin: 0 10px;">Página {{ page }} de {{ total_pages }}</span>
+    <a href="?page={{ [page+1, total_pages]|min }}{% if search %}&search={{ search }}{% endif %}" class="btn btn-secondary btn-sm">Seguinte ›</a>
+    <a href="?page={{ total_pages }}{% if search %}&search={{ search }}{% endif %}" class="btn btn-secondary btn-sm">Último »</a>
+  </div>
+</div>
+{% endblock %}
