@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Editar' if obj else 'Novo' }} Server · GestorCloud{% endblock %}
+
+{% block content %}
+<h2 class="page-title">{{ 'Editar' if obj else 'Novo' }} Server</h2>
+
+<div class="card form-card">
+  <div style="padding: 20px;">
+    <form method="POST">
+      <div class="form-group">
+        <label>Informação Extra</label>
+        <input type="text" name="extra_info" value="{{ obj._extra_info if obj else '' }}" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Provider</label>
+          <select name="provider_id" required>
+            {% for p in providers %}
+              <option value="{{ p.id }}" {{ 'selected' if obj and obj._provider_id == p.id }}>
+                #{{ p.id }} — {{ p.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>ServerSpec</label>
+          <select name="spec_id" required>
+            {% for s in specs %}
+              <option value="{{ s.id }}" {{ 'selected' if obj and obj._spec_id == s.id }}>
+                #{{ s.id }} — {{ s.ram_gb }}GB / {{ s.cpu_cores }} cores
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
