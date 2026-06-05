@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Editar' if obj else 'Novo' }} {{ cls }} · GestorCloud{% endblock %}
+
+{% block content %}
+<h2 class="page-title">{{ 'Editar' if obj else 'Novo' }} {{ cls }}</h2>
+
+<div class="card form-card">
+  <div style="padding: 20px;">
+    <form method="POST">
+      {% for name, label, type in fields %}
+      <div class="form-group">
+        <label>{{ label }}</label>
+        <input type="{{ type }}" name="{{ name }}"
+               value="{{ values[name] if values is defined and name in values else '' }}"
+               required>
+      </div>
+      {% endfor %}
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
