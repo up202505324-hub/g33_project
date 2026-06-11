@@ -793,7 +793,7 @@ def change_password():
     return render_template('index.html', stats=stats, pw_error=pw_error)
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
 
 
 
